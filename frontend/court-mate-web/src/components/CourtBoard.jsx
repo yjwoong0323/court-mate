@@ -8,7 +8,7 @@ function CourtBoard({ courts, isLoading }) {
   return (
     <section className="court-board">
       <div className="section-heading">
-        <h2>코트 현황</h2>
+        <h2>Courts</h2>
       </div>
 
       {isLoading ? (

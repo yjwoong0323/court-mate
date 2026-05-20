@@ -33,13 +33,14 @@
 
 .layout-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 320px;
   gap: 20px;
   max-width: 1280px;
   margin: 0 auto;
 }
 
-.court-board {
+.court-board,
+.player-panel {
   border: 1px solid #dde5ec;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.94);
@@ -159,6 +160,56 @@
 .empty-text {
   color: #67758b;
   font-size: 14px;
+}
+
+.player-panel {
+  min-height: 320px;
+  padding: 24px;
+}
+
+.player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.player-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px;
+  border: 1px solid #e2e9f0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.player-item strong {
+  font-size: 15px;
+}
+
+.level-badge {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #172033;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.level-badge.male {
+  background: #d9eefc;
+}
+
+.level-badge.female {
+  background: #fde1ec;
 }
 
 .error-banner {
