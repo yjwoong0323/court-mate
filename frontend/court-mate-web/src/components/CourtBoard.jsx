@@ -22,7 +22,7 @@ function CourtBoard({ courts, isLoading }) {
           </div>
 
           <div className="section-heading waiting-heading">
-            <h2>대기 코트</h2>
+            {/* <h2>대기 코트</h2> */}
           </div>
           <div className="court-grid waiting-courts">
             {waitingCourts.map((court) => (

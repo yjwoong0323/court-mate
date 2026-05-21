@@ -6,7 +6,7 @@ function CourtCard({ court }) {
     <article className={`court-card ${isWaitingCourt ? 'waiting' : ''}`}>
       <div className="court-card-header">
         <h3>{court.name}</h3>
-        <span>{isWaitingCourt ? 'Waiting' : 'ON'}</span>
+        <span>{isWaitingCourt ? 'Waiting' : 'Live'}</span>
       </div>
       <div className="court-slots">
         <span>빈 자리</span>

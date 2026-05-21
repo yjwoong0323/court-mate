@@ -69,6 +69,7 @@ function App() {
     }
   }, [])
 
+  // 화면
   return (
     <main className="app-shell">
       <section className="app-header">
