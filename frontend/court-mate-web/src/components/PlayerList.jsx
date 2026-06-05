@@ -1,4 +1,4 @@
-function PlayerList({ players, isLoading }) {
+function PlayerList({ players, isLoading, selectedPlayer, onSelectPlayer }) {
   return (
     <aside className="player-panel">
       <div className="section-heading">
@@ -12,11 +12,18 @@ function PlayerList({ players, isLoading }) {
       ) : (
         <ul className="player-list">
           {players.map((player) => (
-            <li className="player-item" key={player.id}>
-              <span className={`level-badge ${player.sex === 'M' ? 'male' : 'female'}`}>
-                {player.level}
-              </span>
-              <strong>{player.name}</strong>
+            <li key={player.id}>
+              <button
+                className={`player-item ${selectedPlayer?.id === player.id ? 'selected' : ''}`}
+                type="button"
+                onClick={() => onSelectPlayer(player)}
+                aria-pressed={selectedPlayer?.id === player.id}
+              >
+                <span className={`level-badge ${player.sex === 'M' ? 'male' : 'female'}`}>
+                  {player.level}
+                </span>
+                <strong>{player.name}</strong>
+              </button>
             </li>
           ))}
         </ul>

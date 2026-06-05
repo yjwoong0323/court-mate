@@ -1,6 +1,6 @@
 import CourtCard from './CourtCard'
 
-function CourtBoard({ courts, isLoading }) {
+function CourtBoard({ courts, courtSlots, isLoading, selectedPlayer, selectedSlot, onSlotClick }) {
   // props로 받은 courts 배열을 ACTIVE 코트와 WAITING 코트로 나눠서 화면에 따로 보여준다.
   const activeCourts = courts.filter((court) => court.courtType === 'ACTIVE')
   const waitingCourts = courts.filter((court) => court.courtType === 'WAITING')
@@ -17,7 +17,14 @@ function CourtBoard({ courts, isLoading }) {
         <>
           <div className="court-grid active-courts">
             {activeCourts.map((court) => (
-              <CourtCard court={court} key={court.id} />
+              <CourtCard
+                court={court}
+                key={court.id}
+                slots={courtSlots[court.id]}
+                selectedPlayer={selectedPlayer}
+                selectedSlot={selectedSlot}
+                onSlotClick={onSlotClick}
+              />
             ))}
           </div>
 
@@ -26,7 +33,14 @@ function CourtBoard({ courts, isLoading }) {
           </div>
           <div className="court-grid waiting-courts">
             {waitingCourts.map((court) => (
-              <CourtCard court={court} key={court.id} />
+              <CourtCard
+                court={court}
+                key={court.id}
+                slots={courtSlots[court.id]}
+                selectedPlayer={selectedPlayer}
+                selectedSlot={selectedSlot}
+                onSlotClick={onSlotClick}
+              />
             ))}
           </div>
         </>
