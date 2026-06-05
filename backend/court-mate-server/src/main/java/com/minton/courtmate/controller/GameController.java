@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/courts/{courtId}/games")
+@RequestMapping("/api/courts/{courtId}")
 @RequiredArgsConstructor
 public class GameController {
 
@@ -17,10 +17,17 @@ public class GameController {
   /**
    * 게임 생성 (시작)
    */
-  @PostMapping("/start")
+  @PostMapping("/games/start")
   public ResponseEntity<GameStartRes> startGame(@PathVariable int courtId,
                                                 @RequestBody GameStartReq req) {
 
     return ResponseEntity.ok(gameService.startGame(courtId, req));
+  }
+
+  @PatchMapping("/games/current/end")
+  public ResponseEntity<Void> endGame(@PathVariable int courtId) {
+    gameService.endGame(courtId);
+
+    return ResponseEntity.noContent().build();
   }
 }

@@ -15,16 +15,18 @@ CREATE TABLE `admin` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
 -- player
 CREATE TABLE `player` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `sex` enum('M','W') NOT NULL,
   `level` varchar(10) NOT NULL,
-  `is_attended` BIT NOT NULL DEFAULT 0,
+  `is_attended` bit(1) NOT NULL DEFAULT b'0',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- court
 CREATE TABLE `court` (
@@ -45,6 +47,7 @@ CREATE TABLE `game` (
   KEY `FK_court_id_idx` (`court_id`),
   CONSTRAINT `FK_court_id` FOREIGN KEY (`court_id`) REFERENCES `court` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 
 -- court_assignment

@@ -68,6 +68,13 @@ public class GameService {
       throw new IllegalArgumentException("Including Player Not Exists");
     }
 
+    // 지금 참석 중인 지 확인
+    boolean isAttendedPlayer = players.stream()
+        .anyMatch(p -> p.getIsAttended());
+    if (!isAttendedPlayer) {
+      throw new IllegalArgumentException("Not Attended Player Included.");
+    }
+
     // 선수들 중 이미 경기 중인 사람이 있는 지 확인
     boolean isPlayingPlayer = courtAssignmentRepository.existsByPlayer_IdInAndGame_Status(
         playerIds, Game.GameStatus.PLAYING
@@ -99,6 +106,13 @@ public class GameService {
     return new GameStartRes(savedGame, players);
   }
 
-  public void endGame(int gameId) {
+  @Transactional
+  public void endGame(int courtId) {
+    // 해당 코트 게임 조회
+    Game endedGame = gameRepository.findByCourt_IdAndStatus(courtId, Game.GameStatus.PLAYING)
+        .orElseThrow(() -> new IllegalArgumentException("This Game Is Not Playing Now"));
+
+    // 게임 종료
+    endedGame.end();
   }
 }
