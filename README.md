@@ -7,7 +7,7 @@
 ## Tech Stack
 
 - Backend: Java 17, Spring Boot 3, Spring Data JPA, MySQL, Gradle
-- Frontend: React, JavaScript, CSS
+- Frontend: React
 
 ## 주요 기능
 
