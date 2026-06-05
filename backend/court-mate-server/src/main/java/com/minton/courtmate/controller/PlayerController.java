@@ -33,6 +33,22 @@ public class PlayerController {
   }
 
   /**
+   * 참석 선수 전체 조회
+   */
+  @GetMapping("/attended")
+  public ResponseEntity<List<PlayerCreateRes>> getAttendedPlayers() {
+    return ResponseEntity.ok(playerService.findAttendedPlayers());
+  }
+
+  /**
+   * 미참석 선수 전체 조회
+   */
+  @GetMapping("/notAttended")
+  public ResponseEntity<List<PlayerCreateRes>> getNotAttendedPlayers() {
+    return ResponseEntity.ok(playerService.findNotAttendedPlayers());
+  }
+
+  /**
    * 특정 선수 조회 (id)
    */
   @GetMapping("/{id}")

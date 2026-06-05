@@ -39,6 +39,28 @@ public class PlayerService {
   }
 
   /**
+   * 참석 선수 전체 조회
+   */
+  @Transactional(readOnly = true)
+  public List<PlayerCreateRes> findAttendedPlayers() {
+    return playerRepository.findAllByIsAttendedTrue()
+        .stream()
+        .map(PlayerCreateRes::new)
+        .toList();
+  }
+
+  /**
+   * 미참석 선수 전체 조회
+   */
+  @Transactional(readOnly = true)
+  public List<PlayerCreateRes> findNotAttendedPlayers() {
+    return playerRepository.findAllByIsAttendedFalse()
+        .stream()
+        .map(PlayerCreateRes::new)
+        .toList();
+  }
+
+  /**
    * 특정 선수 조회
    */
   @Transactional(readOnly = true)

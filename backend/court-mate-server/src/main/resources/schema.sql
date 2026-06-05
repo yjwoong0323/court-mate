@@ -38,13 +38,14 @@ CREATE TABLE `court` (
 CREATE TABLE `game` (
   `id` int NOT NULL AUTO_INCREMENT,
   `court_id` int NOT NULL,
-  `status` enum('BEFORE','PLAYING','FINISHED') NOT NULL DEFAULT 'BEFORE',
-  `started_at` datetime DEFAULT NULL,
+  `status` enum('PLAYING','FINISHED') NOT NULL DEFAULT 'PLAYING',
+  `started_at` datetime NOT NULL,
   `ended_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_court_id_idx` (`court_id`),
   CONSTRAINT `FK_court_id` FOREIGN KEY (`court_id`) REFERENCES `court` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- court_assignment
 CREATE TABLE `court_assignment` (
