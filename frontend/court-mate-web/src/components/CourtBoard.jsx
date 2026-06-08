@@ -1,9 +1,37 @@
 import CourtCard from './CourtCard'
 
-function CourtBoard({ courts, courtSlots, isLoading, selectedPlayer, selectedSlot, onSlotClick }) {
-  // props로 받은 courts 배열을 ACTIVE 코트와 WAITING 코트로 나눠서 화면에 따로 보여준다.
+function CourtBoard({
+  courts,
+  courtSlots,
+  isLoading,
+  selectedPlayer,
+  selectedSlot,
+  courtGames,
+  actionCourtId,
+  moveMenuCourtId,
+  now,
+  getElapsedSeconds,
+  onSlotClick,
+  onStartGame,
+  onEndGame,
+  onClearCourt,
+  onToggleMoveMenu,
+  onMoveCourt,
+}) {
   const activeCourts = courts.filter((court) => court.courtType === 'ACTIVE')
   const waitingCourts = courts.filter((court) => court.courtType === 'WAITING')
+
+  const getMoveTargetCourts = (fromCourt) => {
+    const targetCourts = fromCourt.courtType === 'WAITING' ? courts : activeCourts
+
+    return targetCourts.filter((court) => {
+      const slots = courtSlots[court.id] ?? []
+      const hasAssignedPlayers = slots.some(Boolean)
+      const hasGame = Boolean(courtGames[court.id])
+
+      return court.id !== fromCourt.id && !hasAssignedPlayers && !hasGame
+    })
+  }
 
   return (
     <section className="court-board">
@@ -23,14 +51,23 @@ function CourtBoard({ courts, courtSlots, isLoading, selectedPlayer, selectedSlo
                 slots={courtSlots[court.id]}
                 selectedPlayer={selectedPlayer}
                 selectedSlot={selectedSlot}
+                gameState={courtGames[court.id]}
+                isActionLoading={actionCourtId === court.id}
+                isMoveMenuOpen={moveMenuCourtId === court.id}
+                moveTargetCourts={getMoveTargetCourts(court)}
+                now={now}
+                getElapsedSeconds={getElapsedSeconds}
                 onSlotClick={onSlotClick}
+                onStartGame={onStartGame}
+                onEndGame={onEndGame}
+                onClearCourt={onClearCourt}
+                onToggleMoveMenu={onToggleMoveMenu}
+                onMoveCourt={onMoveCourt}
               />
             ))}
           </div>
 
-          <div className="section-heading waiting-heading">
-            {/* <h2>대기 코트</h2> */}
-          </div>
+          <div className="section-heading waiting-heading" />
           <div className="court-grid waiting-courts">
             {waitingCourts.map((court) => (
               <CourtCard
@@ -39,7 +76,18 @@ function CourtBoard({ courts, courtSlots, isLoading, selectedPlayer, selectedSlo
                 slots={courtSlots[court.id]}
                 selectedPlayer={selectedPlayer}
                 selectedSlot={selectedSlot}
+                gameState={courtGames[court.id]}
+                isActionLoading={actionCourtId === court.id}
+                isMoveMenuOpen={moveMenuCourtId === court.id}
+                moveTargetCourts={getMoveTargetCourts(court)}
+                now={now}
+                getElapsedSeconds={getElapsedSeconds}
                 onSlotClick={onSlotClick}
+                onStartGame={onStartGame}
+                onEndGame={onEndGame}
+                onClearCourt={onClearCourt}
+                onToggleMoveMenu={onToggleMoveMenu}
+                onMoveCourt={onMoveCourt}
               />
             ))}
           </div>
