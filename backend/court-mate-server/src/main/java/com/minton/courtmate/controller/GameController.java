@@ -30,4 +30,11 @@ public class GameController {
 
     return ResponseEntity.noContent().build();
   }
+
+  @PatchMapping("/games/current/move/{toCourtId}")
+  public ResponseEntity<Void> moveCourtTo(@PathVariable int courtId, @PathVariable int toCourtId) {
+    gameService.moveCourt(courtId, toCourtId);
+
+    return ResponseEntity.noContent().build();
+  }
 }

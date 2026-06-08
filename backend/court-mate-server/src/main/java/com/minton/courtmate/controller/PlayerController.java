@@ -1,5 +1,6 @@
 package com.minton.courtmate.controller;
 
+import com.minton.courtmate.domain.Player;
 import com.minton.courtmate.dto.PlayerCreateReq;
 import com.minton.courtmate.dto.PlayerCreateRes;
 import com.minton.courtmate.service.PlayerService;
@@ -25,27 +26,15 @@ public class PlayerController {
   }
 
   /**
-   * 선수 전체 조회
+   * 선수 조건 조회
    */
   @GetMapping
-  public ResponseEntity<List<PlayerCreateRes>> getAllPlayers() {
-    return ResponseEntity.ok(playerService.findAll());
-  }
-
-  /**
-   * 참석 선수 전체 조회
-   */
-  @GetMapping("/attended")
-  public ResponseEntity<List<PlayerCreateRes>> getAttendedPlayers() {
-    return ResponseEntity.ok(playerService.findAttendedPlayers());
-  }
-
-  /**
-   * 미참석 선수 전체 조회
-   */
-  @GetMapping("/notAttended")
-  public ResponseEntity<List<PlayerCreateRes>> getNotAttendedPlayers() {
-    return ResponseEntity.ok(playerService.findNotAttendedPlayers());
+  public ResponseEntity<List<PlayerCreateRes>> getPlayersBy(
+      @RequestParam(required = false) Player.Sex sex,
+      @RequestParam(required = false) String level,
+      @RequestParam(required = false) Boolean isAttended
+      ) {
+    return ResponseEntity.ok(playerService.findPlayersBy(sex, level, isAttended));
   }
 
   /**
@@ -62,6 +51,15 @@ public class PlayerController {
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> removePlayerById(@PathVariable int id) {
     playerService.delete(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * 선수 참석 상태 변경
+   */
+  @PatchMapping("/{id}/changeIsAttended")
+  public ResponseEntity<Void> changeIsAttended(@PathVariable int id) {
+    playerService.changeIsAttended(id);
     return ResponseEntity.noContent().build();
   }
 }

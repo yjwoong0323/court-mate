@@ -68,10 +68,10 @@ public class GameService {
       throw new IllegalArgumentException("Including Player Not Exists");
     }
 
-    // 지금 참석 중인 지 확인
-    boolean isAttendedPlayer = players.stream()
-        .anyMatch(p -> p.getIsAttended());
-    if (!isAttendedPlayer) {
+    // 배정된 선수 4명이 모두 참석 중인 지 확인
+    boolean hasNotAttendedPlayer = players.stream()
+        .anyMatch(p -> !Boolean.TRUE.equals(p.getIsAttended()));
+    if (hasNotAttendedPlayer) {
       throw new IllegalArgumentException("Not Attended Player Included.");
     }
 
@@ -114,5 +114,33 @@ public class GameService {
 
     // 게임 종료
     endedGame.end();
+  }
+
+  @Transactional
+  public void moveCourt(int fromCourtId, int toCourtId) {
+    // from 코트 게임 조회
+    Game game = gameRepository.findByCourt_IdAndStatus(fromCourtId, Game.GameStatus.PLAYING)
+        .orElseThrow(() -> new IllegalArgumentException("This Game Is Not Playing Now"));
+
+    // to 코트 조회
+    Court toCourt = courtRepository.findById(toCourtId)
+        .orElseThrow(() -> new IllegalArgumentException("Not Found Target Court"));
+
+    if (toCourt.getCourtType() != Court.CourtType.ACTIVE) {
+      throw new IllegalArgumentException("Target Court Is Not Active Court");
+    }
+
+    if (fromCourtId == toCourt.getId()) {
+      throw new IllegalArgumentException("Already Same Court");
+    }
+
+    boolean isToCourtIsPlayingGame =
+        gameRepository.existsByCourt_IdAndStatus(toCourt.getId(), Game.GameStatus.PLAYING);
+
+    if (isToCourtIsPlayingGame){
+      throw new IllegalArgumentException("Target Court Already Has Playing Game");
+    }
+
+    game.moveTo(toCourt);
   }
 }

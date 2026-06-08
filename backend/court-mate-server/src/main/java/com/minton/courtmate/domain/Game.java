@@ -58,4 +58,12 @@ public class Game {
     this.status = GameStatus.FINISHED;
     this.endedAt = LocalDateTime.now();
   }
+
+  public void moveTo(Court toCourt) {
+    if (this.status == GameStatus.FINISHED) {
+      throw new IllegalStateException("Finished Game Cannot Move Court");
+    }
+
+    this.court = toCourt;
+  }
 }
