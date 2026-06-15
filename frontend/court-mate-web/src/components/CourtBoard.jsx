@@ -1,4 +1,8 @@
-import CourtCard from './CourtCard'
+import { useState } from 'react'
+import { IconPlus } from '@tabler/icons-react'
+import CourtCreateForm from './courts/CourtCreateForm'
+import CourtGrid from './courts/CourtGrid'
+import { INITIAL_COURT_FORM } from '../utils/courtUtils'
 
 function CourtBoard({
   courts,
@@ -10,16 +14,39 @@ function CourtBoard({
   actionCourtId,
   moveMenuCourtId,
   now,
-  getElapsedSeconds,
   onSlotClick,
   onStartGame,
   onEndGame,
   onClearCourt,
   onToggleMoveMenu,
   onMoveCourt,
+  isCreatingCourt,
+  onCreateCourt,
 }) {
+  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [formValues, setFormValues] = useState(INITIAL_COURT_FORM)
   const activeCourts = courts.filter((court) => court.courtType === 'ACTIVE')
   const waitingCourts = courts.filter((court) => court.courtType === 'WAITING')
+
+  const handleFormChange = (event) => {
+    const { name, value } = event.target
+
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }))
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    const isCreated = await onCreateCourt(formValues)
+
+    if (isCreated) {
+      setFormValues(INITIAL_COURT_FORM)
+      setIsCreateOpen(false)
+    }
+  }
 
   const getMoveTargetCourts = (fromCourt) => {
     const targetCourts = fromCourt.courtType === 'WAITING' ? courts : activeCourts
@@ -33,64 +60,81 @@ function CourtBoard({
     })
   }
 
+  const selectedMoveCourt = courts.find((court) => court.id === moveMenuCourtId)
+  const moveTargetCourtIds = new Set(
+    selectedMoveCourt ? getMoveTargetCourts(selectedMoveCourt).map((court) => court.id) : [],
+  )
+  const isMoveModeActive = Boolean(selectedMoveCourt)
+
   return (
     <section className="court-board">
-      <div className="section-heading">
+      <div className="section-heading court-heading">
         <h2>Courts</h2>
+        <div className="court-heading-actions">
+          <CourtCreateForm
+            formValues={formValues}
+            isOpen={isCreateOpen}
+            isSubmitting={isCreatingCourt}
+            onChange={handleFormChange}
+            onSubmit={handleSubmit}
+            onUpdate={setFormValues}
+          />
+
+          <button
+            className={`court-add-toggle ${isCreateOpen ? 'active' : ''}`}
+            type="button"
+            onClick={() => setIsCreateOpen((prevOpen) => !prevOpen)}
+            aria-label="코트 추가 폼 열기"
+            title="코트 추가"
+          >
+            <IconPlus size={19} />
+          </button>
+        </div>
       </div>
 
       {isLoading ? (
         <p className="empty-text">코트 정보를 불러오는 중입니다.</p>
       ) : (
         <>
-          <div className="court-grid active-courts">
-            {activeCourts.map((court) => (
-              <CourtCard
-                court={court}
-                key={court.id}
-                slots={courtSlots[court.id]}
-                selectedPlayer={selectedPlayer}
-                selectedSlot={selectedSlot}
-                gameState={courtGames[court.id]}
-                isActionLoading={actionCourtId === court.id}
-                isMoveMenuOpen={moveMenuCourtId === court.id}
-                moveTargetCourts={getMoveTargetCourts(court)}
-                now={now}
-                getElapsedSeconds={getElapsedSeconds}
-                onSlotClick={onSlotClick}
-                onStartGame={onStartGame}
-                onEndGame={onEndGame}
-                onClearCourt={onClearCourt}
-                onToggleMoveMenu={onToggleMoveMenu}
-                onMoveCourt={onMoveCourt}
-              />
-            ))}
-          </div>
+          <CourtGrid
+            courts={activeCourts}
+            courtGames={courtGames}
+            courtSlots={courtSlots}
+            actionCourtId={actionCourtId}
+            moveMenuCourtId={moveMenuCourtId}
+            moveTargetCourtIds={moveTargetCourtIds}
+            now={now}
+            selectedPlayer={selectedPlayer}
+            selectedSlot={selectedSlot}
+            isMoveModeActive={isMoveModeActive}
+            onClearCourt={onClearCourt}
+            onEndGame={onEndGame}
+            onMoveCourt={onMoveCourt}
+            onSlotClick={onSlotClick}
+            onStartGame={onStartGame}
+            onToggleMoveMenu={onToggleMoveMenu}
+          />
 
-          <div className="section-heading waiting-heading" />
-          <div className="court-grid waiting-courts">
-            {waitingCourts.map((court) => (
-              <CourtCard
-                court={court}
-                key={court.id}
-                slots={courtSlots[court.id]}
-                selectedPlayer={selectedPlayer}
-                selectedSlot={selectedSlot}
-                gameState={courtGames[court.id]}
-                isActionLoading={actionCourtId === court.id}
-                isMoveMenuOpen={moveMenuCourtId === court.id}
-                moveTargetCourts={getMoveTargetCourts(court)}
-                now={now}
-                getElapsedSeconds={getElapsedSeconds}
-                onSlotClick={onSlotClick}
-                onStartGame={onStartGame}
-                onEndGame={onEndGame}
-                onClearCourt={onClearCourt}
-                onToggleMoveMenu={onToggleMoveMenu}
-                onMoveCourt={onMoveCourt}
-              />
-            ))}
-          </div>
+          <div className="court-divider" aria-hidden="true" />
+          <CourtGrid
+            className="waiting-courts"
+            courts={waitingCourts}
+            courtGames={courtGames}
+            courtSlots={courtSlots}
+            actionCourtId={actionCourtId}
+            moveMenuCourtId={moveMenuCourtId}
+            moveTargetCourtIds={moveTargetCourtIds}
+            now={now}
+            selectedPlayer={selectedPlayer}
+            selectedSlot={selectedSlot}
+            isMoveModeActive={isMoveModeActive}
+            onClearCourt={onClearCourt}
+            onEndGame={onEndGame}
+            onMoveCourt={onMoveCourt}
+            onSlotClick={onSlotClick}
+            onStartGame={onStartGame}
+            onToggleMoveMenu={onToggleMoveMenu}
+          />
         </>
       )}
     </section>

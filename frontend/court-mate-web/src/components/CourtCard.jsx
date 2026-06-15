@@ -1,16 +1,7 @@
-import {
-  IconArrowRight,
-  IconPlayerPlay,
-  IconPlayerStop,
-  IconTrash,
-} from '@tabler/icons-react'
-
-function formatElapsedTime(totalSeconds) {
-  const minutes = Math.floor(totalSeconds / 60)
-  const seconds = totalSeconds % 60
-
-  return `${minutes}:${String(seconds).padStart(2, '0')}`
-}
+import { IconArrowLeft } from '@tabler/icons-react'
+import CourtActions from './courts/CourtActions'
+import CourtSlot from './courts/CourtSlot'
+import { formatElapsedTime, getElapsedSeconds, SLOT_COUNT } from '../utils/courtUtils'
 
 function CourtCard({
   court,
@@ -19,10 +10,11 @@ function CourtCard({
   selectedSlot,
   gameState,
   isActionLoading,
-  isMoveMenuOpen,
-  moveTargetCourts,
+  isMoveModeActive,
+  isMoveSource,
+  isMoveTarget,
+  moveSourceCourtId,
   now,
-  getElapsedSeconds,
   onSlotClick,
   onStartGame,
   onEndGame,
@@ -34,135 +26,105 @@ function CourtCard({
   const isPlaying = gameState?.status === 'PLAYING'
   const isFinished = gameState?.status === 'FINISHED'
   const canMoveAssignedPlayer = !isPlaying
-  const slotItems = Array.from({ length: 4 }, (_, index) => slots[index] ?? null)
+  const slotItems = Array.from({ length: SLOT_COUNT }, (_, index) => slots[index] ?? null)
   const assignedPlayers = slotItems.filter(Boolean)
-  const canStartGame = !isWaitingCourt && assignedPlayers.length === 4 && !isActionLoading
+  const canStartGame =
+    !isWaitingCourt && assignedPlayers.length === SLOT_COUNT && !isActionLoading
   const canMoveCourt = assignedPlayers.length > 0 && !isFinished && !isActionLoading
   const elapsedSeconds = getElapsedSeconds(gameState, now)
+  const cardClassName = [
+    'court-card',
+    isWaitingCourt ? 'waiting' : '',
+    isPlaying ? 'playing' : '',
+    isMoveModeActive ? 'move-mode' : '',
+    isMoveSource ? 'move-source' : '',
+    isMoveTarget ? 'move-target' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  const handleCourtCardClickCapture = (event) => {
+    if (!isMoveTarget || !moveSourceCourtId) {
+      return
+    }
+
+    event.preventDefault()
+    event.stopPropagation()
+    onMoveCourt(moveSourceCourtId, court.id)
+  }
+
+  const handleCourtCardKeyDown = (event) => {
+    if (!isMoveTarget || !moveSourceCourtId || (event.key !== 'Enter' && event.key !== ' ')) {
+      return
+    }
+
+    event.preventDefault()
+    onMoveCourt(moveSourceCourtId, court.id)
+  }
 
   return (
-    <article className={`court-card ${isWaitingCourt ? 'waiting' : ''} ${isPlaying ? 'playing' : ''}`}>
+    <article
+      className={cardClassName}
+      onClickCapture={handleCourtCardClickCapture}
+      onKeyDown={handleCourtCardKeyDown}
+      role={isMoveTarget ? 'button' : undefined}
+      tabIndex={isMoveTarget ? 0 : undefined}
+      title={isMoveTarget ? `${court.name}으로 이동` : undefined}
+    >
       <div className="court-card-header">
         <h3>{court.name}</h3>
-        <span>{isWaitingCourt ? 'Waiting' : isPlaying ? 'Playing' : 'Live'}</span>
+        <div className="court-card-header-actions">
+          {isWaitingCourt && canMoveCourt && (
+            <button
+              className="court-action move waiting-header-move"
+              type="button"
+              onClick={() => onToggleMoveMenu(court.id)}
+              disabled={isActionLoading}
+              title="코트 이동"
+            >
+              <IconArrowLeft size={17} />
+              코트 이동
+            </button>
+          )}
+          <span className={`court-status-badge ${isPlaying ? 'on' : ''}`}>
+            {isPlaying && <i aria-hidden="true" />}
+            {isWaitingCourt ? 'Waiting' : isPlaying ? 'ON' : 'Live'}
+          </span>
+        </div>
       </div>
 
-      {(!isWaitingCourt || canMoveCourt) && (
-        <>
-          <div className={`court-controls ${isWaitingCourt ? 'waiting-move' : ''}`}>
-            {!isWaitingCourt && (
-              <div className="court-timer">
-                {gameState ? formatElapsedTime(elapsedSeconds) : 'Start The Game!'}
-              </div>
-            )}
-
-            <div className="court-actions">
-              {!isWaitingCourt && !gameState && (
-                <button
-                  className="court-action start"
-                  type="button"
-                  onClick={() => onStartGame(court.id)}
-                  disabled={!canStartGame}
-                  title={assignedPlayers.length === 4 ? '게임 시작' : '선수 4명을 먼저 배치하세요'}
-                >
-                  <IconPlayerPlay size={17} />
-                  시작
-                </button>
-              )}
-
-              {isPlaying && (
-                <button
-                  className="court-action end"
-                  type="button"
-                  onClick={() => onEndGame(court.id)}
-                  disabled={isActionLoading}
-                  title="게임 종료"
-                >
-                  <IconPlayerStop size={17} />
-                  종료
-                </button>
-              )}
-
-              {canMoveCourt && (
-                <button
-                  className="court-action move"
-                  type="button"
-                  onClick={() => onToggleMoveMenu(court.id)}
-                  disabled={isActionLoading}
-                  title="코트 이동"
-                >
-                  <IconArrowRight size={17} />
-                  이동
-                </button>
-              )}
-
-              {isFinished && (
-                <button
-                  className="court-action clear"
-                  type="button"
-                  onClick={() => onClearCourt(court.id)}
-                  title="코트 비우기"
-                >
-                  <IconTrash size={17} />
-                  비우기
-                </button>
-              )}
-            </div>
-          </div>
-
-          {isMoveMenuOpen && (
-            <div className="court-move-panel">
-              {moveTargetCourts.length > 0 ? (
-                moveTargetCourts.map((targetCourt) => (
-                  <button
-                    className="move-target-button"
-                    type="button"
-                    key={targetCourt.id}
-                    onClick={() => onMoveCourt(court.id, targetCourt.id)}
-                  >
-                    {targetCourt.name}
-                  </button>
-                ))
-              ) : (
-                <p className="empty-text small">이동 가능한 빈 코트가 없습니다.</p>
-              )}
-            </div>
-          )}
-        </>
+      {!isWaitingCourt && (
+        <CourtActions
+          courtId={court.id}
+          assignedPlayerCount={assignedPlayers.length}
+          canMoveCourt={canMoveCourt}
+          canStartGame={canStartGame}
+          elapsedText={gameState ? formatElapsedTime(elapsedSeconds) : 'Before Game'}
+          isActionLoading={isActionLoading}
+          isFinished={isFinished}
+          isPlaying={isPlaying}
+          isWaitingCourt={isWaitingCourt}
+          onClearCourt={onClearCourt}
+          onEndGame={onEndGame}
+          onStartGame={onStartGame}
+          onToggleMoveMenu={onToggleMoveMenu}
+        />
       )}
 
       <div className="court-slots">
-        {slotItems.map((player, index) => {
-          const isEmpty = !player
-          const isSelectedSlot =
-            selectedSlot?.courtId === court.id && selectedSlot?.slotIndex === index
-          const canClickSlot = canMoveAssignedPlayer && (isEmpty ? Boolean(selectedPlayer) : true)
-
-          return (
-            <button
-              className={`court-slot ${isEmpty ? 'empty' : 'assigned'} ${isEmpty && selectedPlayer && canMoveAssignedPlayer ? 'ready' : ''
-                } ${!isEmpty && canMoveAssignedPlayer ? 'movable' : ''} ${isSelectedSlot ? 'selected' : ''
-                }`}
-              type="button"
-              key={`${court.id}-${index}`}
-              onClick={() => onSlotClick(court.id, index)}
-              disabled={!canClickSlot}
-              aria-label={`${court.name} 코트 ${index + 1}번 자리`}
-              aria-pressed={isSelectedSlot}
-            >
-              {player ? (
-                <>
-                  <span className={`level-badge ${player.sex === 'M' ? 'male' : 'female'}`}>
-                    {player.level}
-                  </span>
-                  <strong>{player.name}</strong>
-                </>
-              ) : (
-                '빈 자리'
-              )}
-            </button>
-          )
-        })}
+        {slotItems.map((player, index) => (
+          <CourtSlot
+            courtId={court.id}
+            courtName={court.name}
+            index={index}
+            key={`${court.id}-${index}`}
+            player={player}
+            selectedPlayer={selectedPlayer}
+            selectedSlot={selectedSlot}
+            canMoveAssignedPlayer={canMoveAssignedPlayer}
+            onSlotClick={onSlotClick}
+          />
+        ))}
       </div>
     </article>
   )

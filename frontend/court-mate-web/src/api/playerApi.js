@@ -16,3 +16,9 @@ export function changePlayerAttendance(playerId) {
     method: 'PATCH',
   })
 }
+
+export function deletePlayer(playerId) {
+  return apiRequest(`/api/players/${playerId}`, {
+    method: 'DELETE',
+  })
+}

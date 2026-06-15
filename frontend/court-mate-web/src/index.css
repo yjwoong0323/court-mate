@@ -5,7 +5,7 @@
 }
 
 :root {
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --sans: Pretendard, Inter, 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
   font-family: var(--sans);
   font-size: 16px;
   line-height: 1.5;
