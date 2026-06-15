@@ -1,5 +1,6 @@
 package com.minton.courtmate.controller;
 
+import com.minton.courtmate.dto.CourtCreateReq;
 import com.minton.courtmate.dto.CourtRes;
 import com.minton.courtmate.service.CourtService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,14 @@ import java.util.List;
 public class CourtController {
 
   private final CourtService courtService;
+
+  /**
+   * 코트 추가
+   */
+  @PostMapping
+  public ResponseEntity addCourt(@RequestBody CourtCreateReq req) {
+    return ResponseEntity.ok(courtService.addCourt(req));
+  }
 
   /**
    * 전체 코트 조회

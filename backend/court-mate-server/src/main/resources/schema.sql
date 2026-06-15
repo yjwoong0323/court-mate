@@ -60,5 +60,5 @@ CREATE TABLE `court_assignment` (
   KEY `FK_game_id_idx` (`game_id`),
   KEY `FK_player_id_idx` (`player_id`),
   CONSTRAINT `FK_game_id` FOREIGN KEY (`game_id`) REFERENCES `game` (`id`),
-  CONSTRAINT `FK_player_id` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`)
+  CONSTRAINT `FK_player_id` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

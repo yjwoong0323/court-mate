@@ -1,5 +1,7 @@
 package com.minton.courtmate.service;
 
+import com.minton.courtmate.domain.Court;
+import com.minton.courtmate.dto.CourtCreateReq;
 import com.minton.courtmate.dto.CourtRes;
 import com.minton.courtmate.repository.CourtRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +27,15 @@ public class CourtService {
         .stream()
         .map(CourtRes::new)
         .toList();
+  }
+
+  /**
+   * 코트 추가
+   */
+  @Transactional
+  public CourtRes addCourt(CourtCreateReq req) {
+    Court newCourt = courtRepository.save(req.toEntity());
+
+    return new CourtRes(newCourt);
   }
 }
