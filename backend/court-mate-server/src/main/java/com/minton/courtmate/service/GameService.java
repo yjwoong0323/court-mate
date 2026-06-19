@@ -15,8 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -143,4 +146,25 @@ public class GameService {
 
     game.moveTo(toCourt);
   }
+
+  /**
+   * 진행 중인 게임과 배정 선수를 한 번에 조회한다.
+   */
+  @Transactional(readOnly = true)
+  public List<GameStartRes> findPlayingGames() {
+    List<CourtAssignment> assignments =
+        courtAssignmentRepository.findAllByGameStatusWithPlayers(Game.GameStatus.PLAYING);
+
+    Map<Game, List<Player>> playersByGame = assignments.stream()
+        .collect(Collectors.groupingBy(
+            CourtAssignment::getGame,
+            LinkedHashMap::new,
+            Collectors.mapping(CourtAssignment::getPlayer, Collectors.toList())
+        ));
+
+    return playersByGame.entrySet().stream()
+        .map(entry -> new GameStartRes(entry.getKey(), entry.getValue()))
+        .toList();
+  }
+
 }
