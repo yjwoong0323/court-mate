@@ -100,6 +100,6 @@ public class PlayerService {
     Player player = playerRepository.findById(playerId)
         .orElseThrow(() -> new IllegalArgumentException("NO PLAYER: " + playerId));
 
-    player.setIsAttended(!player.getIsAttended());
+    player.changeAttendance();
   }
 }

@@ -1,20 +1,24 @@
 -- schema.sql
 
+SET FOREIGN_KEY_CHECKS = 0;
+
 DROP TABLE IF EXISTS court_assignment;
 DROP TABLE IF EXISTS game;
 DROP TABLE IF EXISTS court;
 DROP TABLE IF EXISTS player;
-DROP TABLE IF EXISTS `admin`;
+DROP TABLE IF EXISTS `team`;
 
--- admin
-CREATE TABLE `admin` (
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- team
+CREATE TABLE `team` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `leader_id` int NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 
 -- player
 CREATE TABLE `player` (
@@ -22,10 +26,21 @@ CREATE TABLE `player` (
   `name` varchar(50) NOT NULL,
   `sex` enum('M','W') NOT NULL,
   `level` varchar(10) NOT NULL,
-  `is_attended` bit(1) NOT NULL DEFAULT b'0',
+  `is_attended` bit(1) NOT NULL DEFAULT b'1',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  `team_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_team_id_idx` (`team_id`),
+  CONSTRAINT `FK_team_id` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+ALTER TABLE team
+ADD INDEX FK_leader_idx (leader_id),
+ADD CONSTRAINT FK_leader_id
+FOREIGN KEY (`leader_id`)
+REFERENCES player(`id`)
+ON DELETE SET NULL
+ON UPDATE NO ACTION;
 
 
 -- court
@@ -35,6 +50,7 @@ CREATE TABLE `court` (
   `court_type` enum('ACTIVE','WAITING') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- game
 CREATE TABLE `game` (

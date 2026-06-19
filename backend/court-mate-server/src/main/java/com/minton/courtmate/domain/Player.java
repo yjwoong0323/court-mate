@@ -1,10 +1,7 @@
 package com.minton.courtmate.domain;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -12,8 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "player")
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Player {
 
   @Id
@@ -31,7 +27,11 @@ public class Player {
   private String level;
 
   @Column(name = "is_attended", nullable = false)
-  private Boolean isAttended = false;
+  private Boolean isAttended = true;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "team_id")
+  private Team team;
 
   @CreationTimestamp
   @Column(nullable = false, updatable = false)
@@ -42,9 +42,14 @@ public class Player {
   }
 
   @Builder
-  public Player(String name, Sex sex, String level){
+  private Player(String name, Sex sex, String level, Team team){
     this.name = name;
     this.sex = sex;
     this.level = level;
+    this.team = team;
+  }
+
+  public void changeAttendance() {
+    this.isAttended = !this.isAttended;
   }
 }
