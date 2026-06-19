@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createCourt, getCourts } from '../api/courtApi'
-import { endGame, moveCurrentGame, startGame } from '../api/gameApi'
+import { endGame, getPlayingGames, moveCurrentGame, startGame } from '../api/gameApi'
 import {
   changePlayerAttendance,
   createPlayer,
@@ -48,17 +48,36 @@ export function useDashboardData() {
   useEffect(() => {
     let ignore = false
 
-    // 화면이 처음 열릴 때 코트와 선수를 함께 불러온다.
-    Promise.all([getCourts(), getPlayers()])
-      .then(([courtData, playerData]) => {
+    // 화면이 처음 열릴 때 코트, 선수, 진행 중인 게임을 함께 불러온다.
+    Promise.all([getCourts(), getPlayers(), getPlayingGames()])
+      .then(([courtData, playerData, playingGameData]) => {
         if (ignore) {
           return
         }
 
+        const restoredSlots = {}
+        const restoredGames = {}
+
+        playingGameData.forEach((game) => {
+          const startedAt = game.startedAt ? new Date(game.startedAt).getTime() : Date.now()
+
+          restoredSlots[game.courtId] = Array.from(
+            { length: SLOT_COUNT },
+            (_, index) => game.players?.[index] ?? null,
+          )
+          restoredGames[game.courtId] = {
+            id: game.id,
+            status: game.status,
+            startedAt,
+            elapsedSeconds: 0,
+          }
+        })
+
         setCourts(courtData)
         setPlayers(playerData)
-        setCourtSlots({})
-        setCourtGames({})
+        setCourtSlots(restoredSlots)
+        setCourtGames(restoredGames)
+        setNow(Date.now())
         resetSelection()
       })
       .catch((error) => {

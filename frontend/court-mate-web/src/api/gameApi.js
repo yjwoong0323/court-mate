@@ -1,5 +1,9 @@
 import { apiRequest } from './http'
 
+export function getPlayingGames() {
+  return apiRequest('/api/games/playing')
+}
+
 export function startGame(courtId, playerIds) {
   return apiRequest(`/api/courts/${courtId}/games/start`, {
     method: 'POST',

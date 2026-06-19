@@ -14,19 +14,20 @@ function DashboardPage() {
         onToggle={() => dashboard.setIsDashboardMenuOpen((isOpen) => !isOpen)}
       />
 
-      <main className="app-shell">
-        <section className="app-header">
+      <main className="min-h-screen bg-cm-cream px-3 py-6 text-cm-ink sm:px-4 lg:py-8">
+        <section className="mx-auto mb-6 flex max-w-[1720px] items-end justify-between pl-14 sm:pl-16">
           <div>
-            <p className="eyebrow">CourtMate</p>
-            <h1>코트 관리</h1>
+            <p className="font-display text-sm font-bold tracking-[0.14em] text-cm-blue uppercase">CourtMate</p>
+            <h1 className="mt-1 text-3xl leading-none sm:text-4xl">TEMPO</h1>
           </div>
+          <p className="hidden text-sm text-cm-muted sm:block">선수를 선택한 뒤 빈 자리를 눌러 배치하세요.</p>
         </section>
 
         {dashboard.errorMessage && (
-          <div className="error-banner">{dashboard.errorMessage}</div>
+          <div className="mx-auto mb-4 max-w-[1720px] rounded-xl border border-cm-danger/25 bg-white px-4 py-3 text-sm text-cm-danger shadow-panel" role="alert">{dashboard.errorMessage}</div>
         )}
 
-        <section className="layout-grid">
+        <section className="mx-auto grid max-w-[1720px] grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_440px]">
           <CourtBoard
             courts={dashboard.courts}
             courtSlots={dashboard.courtSlots}

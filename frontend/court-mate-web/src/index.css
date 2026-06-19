@@ -1,31 +1,81 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+@import url('https://fonts.googleapis.com/css2?family=Jua&family=Oxanium:wght@500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-cm-cream: #f3f7fb;
+  --color-cm-navy: #173b63;
+  --color-cm-blue: #3b82c4;
+  --color-cm-sky: #dceeff;
+  --color-cm-ink: #15283b;
+  --color-cm-muted: #60758a;
+  --color-cm-danger: #c83e4d;
+  --color-cm-success: #1f8a5b;
+  --font-display: 'Oxanium', sans-serif;
+  --font-body: 'Jua', sans-serif;
+  --shadow-panel: 0 4px 14px rgb(23 35 60 / 0.08);
 }
 
-:root {
-  --sans: Pretendard, Inter, 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
-  font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-body);
+    color: var(--color-cm-ink);
+    background: var(--color-cm-cream);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+
+  button {
+    transition-duration: 180ms;
+    transition-timing-function: ease-out;
+  }
+
+  button:not(:disabled):active {
+    scale: 0.98;
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  [role='button']:focus-visible {
+    outline: 3px solid rgb(59 130 196 / 0.3);
+    outline-offset: 2px;
+  }
 }
 
-body {
-  margin: 0;
-  padding: 0;
+@keyframes cm-pulse {
+  0%,
+  100% { opacity: 0.45; transform: scale(0.82); }
+  50% { opacity: 1; transform: scale(1); }
 }
 
-#root {
-  min-height: 100vh;
+@keyframes cm-fade-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-}
-
-p {
-  margin: 0;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

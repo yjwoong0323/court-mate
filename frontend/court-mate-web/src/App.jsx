@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import './App.css'
 import DashboardPage from './pages/DashboardPage'
 import LandingPage from './pages/LandingPage'
 

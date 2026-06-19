@@ -1,7 +1,7 @@
 import CourtCard from '../CourtCard'
 
 function CourtGrid({
-  className = 'active-courts',
+  className = '',
   courts,
   courtGames,
   courtSlots,
@@ -20,7 +20,7 @@ function CourtGrid({
   onToggleMoveMenu,
 }) {
   return (
-    <div className={`court-grid ${className}`}>
+    <div className={`grid grid-cols-1 gap-4 md:grid-cols-2 ${className}`}>
       {courts.map((court) => (
         <CourtCard
           court={court}

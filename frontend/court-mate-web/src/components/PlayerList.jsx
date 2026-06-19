@@ -73,11 +73,14 @@ function PlayerList({
   }
 
   return (
-    <aside className="player-panel">
-      <div className="section-heading player-heading">
-        <h2>Players</h2>
+    <aside className="min-h-[320px] rounded-2xl border border-cm-blue/10 bg-white p-4 shadow-panel xl:sticky xl:top-6 xl:max-h-[calc(100vh-48px)] xl:overflow-y-auto">
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <div>
+          <p className="font-display text-xs font-bold tracking-[0.12em] text-cm-blue uppercase">Roster</p>
+          <h2 className="font-display text-2xl font-bold">Players</h2>
+        </div>
         <button
-          className={`player-add-toggle ${isCreateOpen ? 'active' : ''}`}
+          className={`flex h-11 w-11 items-center justify-center rounded-xl border bg-white text-cm-ink transition hover:border-cm-blue hover:text-cm-blue ${isCreateOpen ? 'rotate-45 border-cm-blue bg-cm-blue/5 text-cm-blue' : 'border-cm-blue/15'}`}
           type="button"
           onClick={() => setIsCreateOpen((prevOpen) => !prevOpen)}
           aria-label="플레이어 추가 폼 열기"
@@ -106,11 +109,11 @@ function PlayerList({
       )}
 
       {isLoading ? (
-        <p className="empty-text">선수 정보를 불러오는 중입니다.</p>
+        <p className="py-6 text-center text-sm text-cm-muted">선수 정보를 불러오는 중입니다.</p>
       ) : allPlayers.length === 0 ? (
-        <p className="empty-text">등록된 선수가 없습니다.</p>
+        <p className="py-6 text-center text-sm text-cm-muted">등록된 선수가 없습니다.</p>
       ) : (
-        <div className="player-sections">
+        <div className="flex flex-col gap-6">
           <PlayerSection
             title="참석자"
             count={attendedPlayerCount}
@@ -131,6 +134,8 @@ function PlayerList({
             count={notAttendedPlayerCount}
             players={notAttendedPlayers}
             isDimmed
+            isCollapsible
+            defaultExpanded={false}
             selectedPlayer={selectedPlayer}
             pendingDeletePlayerId={pendingDeletePlayerId}
             deletingPlayerId={deletingPlayerId}
